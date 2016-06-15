@@ -37,7 +37,7 @@ while polarx < polarmax:
     ws.write(writerow,0,x)
     ws.write(writerow,1,y)
     writerow += 1
-    polarx += 0.1
+    polarx += 0.001
 
 wb.save('CamOutline.xls')
     
