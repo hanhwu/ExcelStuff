@@ -81,38 +81,48 @@ roller_max = pitch_radius + amplitude - roller_radius + 0.01
 
 # run through roller angle 0 to 22.5 degrees
 roller_angle = 0
-testmin = roller_min
-testmax = roller_max
 
-guess = (testmin + testmax) / 2 # guess of roller center distance from cam center
+ws = wb.add_sheet('Pressure Angles')
+write_row = 0
 
-while testmax - testmin > 0.00001:
-    contact_sweep_min = roller_angle - math.atan( roller_radius / guess ) * 0.80
-    contact_sweep_max = roller_angle + math.atan( roller_radius / guess ) * 0.80
-    sweep_increment = (contact_sweep_max - contact_sweep_min) / 1000
-    contact_sweep = contact_sweep_min
-    intersect = False
-    while contact_sweep < contact_sweep_max:
-        roller_edge = guess * math.cos(contact_sweep - roller_angle) + math.sqrt( roller_radius**2 - (guess * math.sin( contact_sweep - roller_angle ))**2 )
-        cam_edge = pitch_radius + amplitude * math.sin(8 * contact_sweep - math.pi / 2)
-        if roller_edge > cam_edge:
-            intersect = True
-            # debug-line: print roller_edge, cam_edge
-            pressure_angle = math.pi - math.acos((cam_edge**2 - guess**2 - roller_radius**2) / ( -2 * guess * roller_radius))
-            break
+while roller_angle <= 22.5 * math.pi / 180:
+    testmin = roller_min
+    testmax = roller_max
+    guess = (testmin + testmax) / 2 # guess of roller center distance from cam center
+    while testmax - testmin > 0.00001:
+        contact_sweep_min = roller_angle - math.atan( roller_radius / guess ) * 0.80
+        contact_sweep_max = roller_angle + math.atan( roller_radius / guess ) * 0.80
+        sweep_increment = (contact_sweep_max - contact_sweep_min) / 1000
+        contact_sweep = contact_sweep_min
+        intersect = False
+        while contact_sweep < contact_sweep_max:
+            roller_edge = guess * math.cos(contact_sweep - roller_angle) + math.sqrt( roller_radius**2 - (guess * math.sin( contact_sweep - roller_angle ))**2 )
+            cam_edge = pitch_radius + amplitude * math.sin(8 * contact_sweep - math.pi / 2)
+            if roller_edge > cam_edge:
+                intersect = True
+                # debug-line: print roller_edge, cam_edge
+                pressure_angle = math.pi - math.acos((cam_edge**2 - guess**2 - roller_radius**2) / ( -2 * guess * roller_radius))
+                break
 
-        contact_sweep += sweep_increment
+            contact_sweep += sweep_increment
 
-    if intersect:
-        testmax = guess
-        guess = (testmin + testmax)/2
-    else:
-        testmin = guess
-        guess = (testmin + testmax)/2
+        if intersect:
+            testmax = guess
+            guess = (testmin + testmax)/2
+        else:
+            testmin = guess
+            guess = (testmin + testmax)/2
 
-print 'Roller angle (rad) =', roller_angle
-print 'Roller center R =', guess
-print 'Pressure angle (rad) =', pressure_angle
+    # after roller_center is determined, record data
+    ws.write(write_row,0,roller_angle) #roller_center theta
+    ws.write(write_row,1,guess) #roller_center R
+    ws.write(write_row,2,pressure_angle)
+    write_row += 1
+    roller_angle += 0.1 * math.pi / 180
+
+##    print 'Roller angle (rad) =', roller_angle
+##    print 'Roller center R =', guess
+##    print 'Pressure angle (rad) =', pressure_angle
 
 
 
