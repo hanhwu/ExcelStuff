@@ -117,8 +117,10 @@ while roller_angle <= 22.5 * math.pi / 180:
     ws.write(write_row,0,roller_angle) #roller_center theta
     ws.write(write_row,1,guess) #roller_center R
     ws.write(write_row,2,pressure_angle)
+    ws.write(write_row,3, guess * math.cos(roller_angle))
+    ws.write(write_row,4, guess * math.sin(roller_angle))
     write_row += 1
-    roller_angle += 1 * math.pi / 180
+    roller_angle += 0.1 * math.pi / 180
 
 ##    print 'Roller angle (rad) =', roller_angle
 ##    print 'Roller center R =', guess
