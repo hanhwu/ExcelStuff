@@ -27,7 +27,9 @@ ws = wb.add_sheet('Cam outline')
 cam_angle = 0
 pitch_radius = 18
 amplitude = 1.40
-write_row = 0
+write_row = 1
+ws.write(0,0,'Cam edge x')
+ws.write(0,1,'Cam edge y')
 
 while cam_angle < 2 * math.pi:
     r = pitch_radius + amplitude * math.sin(cam_angle * 8 - math.pi / 2)
@@ -83,9 +85,15 @@ roller_max = pitch_radius + amplitude - roller_radius + 0.01
 roller_angle = 0
 
 ws = wb.add_sheet('Pressure Angles')
-write_row = 0
+ws.write(0,0, 'roller angular position')
+ws.write(0,1, 'roller radial position')
+ws.write(0,2, 'roller pressure angle (rad)')
+ws.write(0,3, 'roller pressure angle (deg)')
+ws.write(0,4, 'roller center x')
+ws.write(0,5, 'roller center y')
+write_row = 1
 
-while roller_angle <= 22.5 * math.pi / 180:
+while roller_angle <= 45 * math.pi / 180:
     testmin = roller_min
     testmax = roller_max
     guess = (testmin + testmax) / 2 # guess of roller center distance from cam center
@@ -101,7 +109,10 @@ while roller_angle <= 22.5 * math.pi / 180:
             if roller_edge > cam_edge:
                 intersect = True
                 # debug-line: print roller_edge, cam_edge
-                pressure_angle = math.pi - math.acos((cam_edge**2 - guess**2 - roller_radius**2) / ( -2 * guess * roller_radius))
+                if contact_sweep <= roller_angle:
+                    pressure_angle = math.pi - math.acos((cam_edge**2 - guess**2 - roller_radius**2) / ( -2 * guess * roller_radius))
+                else:
+                    pressure_angle = math.acos((cam_edge**2 - guess**2 - roller_radius**2) / ( -2 * guess * roller_radius)) - math.pi
                 break
 
             contact_sweep += sweep_increment
@@ -116,9 +127,10 @@ while roller_angle <= 22.5 * math.pi / 180:
     # after roller_center is determined, record data
     ws.write(write_row,0,roller_angle) #roller_center theta
     ws.write(write_row,1,guess) #roller_center R
-    ws.write(write_row,2,pressure_angle)
-    ws.write(write_row,3, guess * math.cos(roller_angle))
-    ws.write(write_row,4, guess * math.sin(roller_angle))
+    ws.write(write_row,2, pressure_angle)
+    ws.write(write_row,3, pressure_angle * 180 / math.pi)
+    ws.write(write_row,4, guess * math.cos(roller_angle))
+    ws.write(write_row,5, guess * math.sin(roller_angle))
     write_row += 1
     roller_angle += 0.1 * math.pi / 180
 
@@ -129,4 +141,5 @@ while roller_angle <= 22.5 * math.pi / 180:
 
 
 wb.save('CamOutline.xls')
+print 'Run complete.'
     
