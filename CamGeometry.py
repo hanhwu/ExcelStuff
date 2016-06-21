@@ -26,7 +26,7 @@ ws = wb.add_sheet('Cam outline')
 
 cam_angle = 0
 pitch_radius = 18
-amplitude = 1.40
+amplitude = 1.2
 write_row = 1
 ws.write(0,0,'Cam edge x')
 ws.write(0,1,'Cam edge y')
