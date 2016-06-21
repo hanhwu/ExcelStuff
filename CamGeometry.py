@@ -32,7 +32,7 @@ ws.write(0,0,'Cam edge x')
 ws.write(0,1,'Cam edge y')
 
 while cam_angle < 2 * math.pi:
-    r = pitch_radius + amplitude * math.sin(cam_angle * 8 - math.pi / 2)
+    r = pitch_radius + amplitude * math.sin(cam_angle * 7 - math.pi / 2)
     x = r * math.cos(cam_angle)
     y = r * math.sin(cam_angle)
     ws.write(write_row,0,x)
@@ -81,7 +81,7 @@ roller_max = pitch_radius + amplitude - roller_radius + 0.01
 ##
 ##
 
-# run through roller angle 0 to 22.5 degrees
+# run through roller angle 0 to ____ degrees
 roller_angle = 0
 
 ws = wb.add_sheet('Pressure Angles')
@@ -93,7 +93,7 @@ ws.write(0,4, 'roller center x')
 ws.write(0,5, 'roller center y')
 write_row = 1
 
-while roller_angle <= 45 * math.pi / 180:
+while roller_angle <= (360 / 7 ) * math.pi / 180:
     testmin = roller_min
     testmax = roller_max
     guess = (testmin + testmax) / 2 # guess of roller center distance from cam center
@@ -105,7 +105,7 @@ while roller_angle <= 45 * math.pi / 180:
         intersect = False
         while contact_sweep < contact_sweep_max:
             roller_edge = guess * math.cos(contact_sweep - roller_angle) + math.sqrt( roller_radius**2 - (guess * math.sin( contact_sweep - roller_angle ))**2 )
-            cam_edge = pitch_radius + amplitude * math.sin(8 * contact_sweep - math.pi / 2)
+            cam_edge = pitch_radius + amplitude * math.sin(7 * contact_sweep - math.pi / 2)
             if roller_edge > cam_edge:
                 intersect = True
                 # debug-line: print roller_edge, cam_edge
